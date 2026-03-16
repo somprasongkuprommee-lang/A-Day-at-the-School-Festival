@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Quiz: A Day at the School Festival</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --correct: #27ae60;
+            --wrong: #c0392b;
+            --bg: #f0f3f7;
+        }
+
+        body {
+            font-family: 'Chakra Petch', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #2d3436;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: var(--primary); margin-bottom: 5px; }
+
+        .reading-passage {
+            background: #f9f9ff;
+            padding: 25px;
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #ffeaa7;
+            border-radius: 12px;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #fff;
+            border-left: 5px solid #dfe6e9;
+            transition: 0.3s;
+        }
+
+        .options-grid { display: grid; gap: 10px; margin-top: 15px; }
+
+        .option-label {
+            padding: 12px;
+            background: #f1f2f6;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            transition: 0.2s;
+        }
+
+        .option-label:hover { background: #e2e2e2; }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover { background: #5b4bc4; }
+
+        #scoreDisplay {
+            display: none;
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎡 School Festival Quiz</h1>
+        <p>ทดสอบความเข้าใจในการอ่านภาษาอังกฤษ</p>
+    </div>
+
+    <div class="reading-passage">
+        <h3>📖 Reading Material: A Day at the School Festival</h3>
+        <p>Every year, our school has a <b>school festival</b>. Students and teachers prepare many fun activities for everyone. The festival is usually held on <b>Saturday</b>.</p>
+        <p>In the morning, students <b>decorate their classrooms</b> and set up booths. Some students <b>sell food and drinks</b> such as noodles, snacks, and juice. Other students prepare <b>games and performances</b>.</p>
+        <p>In the afternoon, many <b>visitors</b> come to the school. Parents, friends, and neighbors join the festival. They enjoy the food, play games, and watch shows.</p>
+        <p>One popular activity is the <b>talent show</b>. Some students sing songs, some dance, and others play musical instruments. The audience claps loudly and cheers for them. It brings everyone <b>together</b> and creates <b>happy memories</b>.</p>
+    </div>
+
+    <div class="student-info">
+        <input type="text" id="stdName" placeholder="ชื่อ-นามสกุล" required>
+        <input type="text" id="stdClass" placeholder="ชั้น/ห้อง (เช่น 2/1)" required>
+        <input type="number" id="stdNo" placeholder="เลขที่" required>
+    </div>
+
+    <form id="quizForm">
+        <div id="quizContainer"></div>
+        <button type="button" class="btn-submit" onclick="checkAnswers()">ตรวจคำตอบและดูเฉลย</button>
+    </form>
+
+    <div id="scoreDisplay"></div>
+</div>
+
+<script>
+    const questions = [
+        { q: "1. What event does the school have every year?", a: "B", opts: ["Sports Day", "School Festival", "Graduation", "Field Trip"], exp: "เฉลย B: ในเนื้อเรื่องบรรทัดแรกระบุว่า 'Every year, our school has a school festival.'" },
+        { q: "2. When is the festival usually held?", a: "C", opts: ["Monday", "Wednesday", "Saturday", "Sunday"], exp: "เฉลย C: เทศกาลมักจัดขึ้นในวันเสาร์ (Saturday)" },
+        { q: "3. Who prepares activities for the festival?", a: "A", opts: ["Students and teachers", "Parents only", "Visitors", "Workers"], exp: "เฉลย A: ทั้งนักเรียนและครูช่วยกันเตรียมกิจกรรมต่างๆ" },
+        { q: "4. What do students do in the morning?", a: "B", opts: ["Sleep", "Decorate classrooms", "Go home", "Watch TV"], exp: "เฉลย B: ในช่วงเช้านักเรียนจะ 'decorate their classrooms' (ตกแต่งห้องเรียน)" },
+        { q: "5. What do some students sell?", a: "B", opts: ["Clothes", "Food and drinks", "Books", "Toys"], exp: "เฉลย B: นักเรียนบางคนขายอาหารและเครื่องดื่ม เช่น บะหมี่และน้ำผลไม้" },
+        { q: "6. Which food is mentioned in the text?", a: "B", opts: ["Pizza", "Noodles", "Bread", "Rice"], exp: "เฉลย B: อาหารที่กล่าวถึงในเรื่องคือ 'noodles' (บะหมี่)" },
+        { q: "7. When do visitors come to the school?", a: "B", opts: ["Morning", "Afternoon", "Evening", "Night"], exp: "เฉลย B: แขกจะเริ่มมาที่โรงเรียนในช่วง 'In the afternoon' (ตอนบ่าย)" },
+        { q: "8. Who comes to the festival as visitors?", a: "A", opts: ["Parents and friends", "Teachers only", "Students only", "Police"], exp: "เฉลย A: แขกประกอบไปด้วย ผู้ปกครอง เพื่อน และเพื่อนบ้าน" },
+        { q: "9. What do visitors do at the festival?", a: "C", opts: ["Work", "Sleep", "Play games and watch shows", "Study"], exp: "เฉลย C: แขกมาสนุกกับอาหาร เล่นเกม และดูโชว์ต่างๆ" },
+        { q: "10. What is a popular activity mentioned?", a: "B", opts: ["Cooking", "Talent show", "Reading", "Cleaning"], exp: "เฉลย B: กิจกรรมยอดนิยมคือ 'Talent show' (การแสดงความสามารถ)" },
+        { q: "11. What can students do in the talent show?", a: "D", opts: ["Sing songs", "Dance", "Play instruments", "All of the above"], exp: "เฉลย D: ถูกทุกข้อ เพราะนักเรียนมีทั้งร้องเพลง เต้น และเล่นดนตรี" },
+        { q: "12. What does the audience do during the show?", a: "B", opts: ["Sleeps", "Claps and cheers", "Leaves", "Studies"], exp: "เฉลย B: ผู้ชม (Audience) จะปรบมือและส่งเสียงเชียร์เสียงดัง" },
+        { q: "13. The festival brings people _____.", a: "B", opts: ["apart", "together", "home", "outside"], exp: "เฉลย B: เทศกาลนี้ช่วยนำผู้คนมาพบปะและรวมตัวกัน (Together)" },
+        { q: "14. The word 'decorate' means ____.", a: "B", opts: ["clean", "make something look nice", "break", "move"], exp: "เฉลย B: Decorate หมายถึง การตกแต่งให้ดูสวยงามขึ้น" },
+        { q: "15. The word 'audience' means ____.", a: "A", opts: ["people watching a show", "teachers", "students", "singers"], exp: "เฉลย A: Audience คือกลุ่มคนที่มาดูการแสดง (ผู้ชม)" }
+    ];
+
+    function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        questions.forEach((item, idx) => {
+            container.innerHTML += `
+                <div class="question-box" id="qBox${idx}">
+                    <p><strong>${item.q}</strong></p>
+                    <div class="options-grid">
+                        ${item.opts.map((opt, oIdx) => `
+                            <label class="option-label">
+                                <input type="radio" name="q${idx}" value="${String.fromCharCode(65 + oIdx)}">
+                                ${String.fromCharCode(65 + oIdx)}. ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="exp${idx}"></div>
+                </div>
+            `;
+        });
+    }
+
+    function checkAnswers() {
+        const name = document.getElementById('stdName').value;
+        if(!name) { alert("กรุณากรอกข้อมูลส่วนตัวให้ครบถ้วนก่อนส่งครับ"); return; }
+
+        let score = 0;
+        questions.forEach((item, idx) => {
+            const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+            const expBox = document.getElementById(`exp${idx}`);
+            const qBox = document.getElementById(`qBox${idx}`);
+            
+            expBox.style.display = 'block';
+            expBox.innerHTML = `<strong>คำอธิบาย:</strong> ${item.exp}`;
+
+            if(selected && selected.value === item.a) {
+                score++;
+                expBox.style.backgroundColor = "#e1f5fe";
+                expBox.style.color = "#01579b";
+                qBox.style.borderLeftColor = "var(--correct)";
+            } else {
+                expBox.style.backgroundColor = "#ffebee";
+                expBox.style.color = "#b71c1c";
+                qBox.style.borderLeftColor = "var(--wrong)";
+            }
+        });
+
+        const scoreDiv = document.getElementById('scoreDisplay');
+        scoreDiv.style.display = 'block';
+        scoreDiv.innerHTML = `เก่งมาก! คุณ ${name}<br>ได้คะแนน ${score} / ${questions.length}`;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    renderQuiz();
+</script>
+</body>
+</html>
